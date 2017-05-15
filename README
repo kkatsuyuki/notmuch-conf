@@ -1,0 +1,23 @@
+~/
+|
+|
+|--- .notmuch-config
+|
+|--- .config/       
+         |
+         |--- offlineimap/
+         |         |
+         |         |--- config
+         |         |--- notmuch_tag
+         |         |--- postsync.sh
+         |
+         |--- user/
+                |
+                |--- mail.target
+                |--- offlineimap-oneshot.service
+                |--- offlineimap.timer
+
+
+systemd/user 関係のファイルは，すべて"systemctl --user enable" で登録する．
+offlineimap-oneshot.service は[Install] をコメントアウトしたため，
+"static" となる．← offlineimap.timer にて起動されるため OK.
