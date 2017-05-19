@@ -1,0 +1,10 @@
+theme: jekyll-theme-cayman
+
+title: "notmuch + emacs + offlineimap configuration procedure"
+tagline: Read/Write e-mails using emacs interface
+
+author:
+  name:       kkatsuyuki
+  url:        https://github.com/kkatsuyuki
+
+repo_url: https://github.com/kkatsuyuki/notmuch-conf
