@@ -12,7 +12,7 @@ synclabels = yes
 # This header is where labels go.  Usually you will be fine
 # with default value (X-Keywords), but in case you want it
 # different, here we go:
-labelsheader = X-Keywords
+# labelsheader = X-Keywords
 
 # Minutes between syncs
 # autorefresh = 0.5

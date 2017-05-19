@@ -2,7 +2,7 @@
 Description=Offlineimap Query Timer
 
 [Timer]
-OnStartupSec=2m
+OnStartupSec=5
 OnUnitInactiveSec=2m
 Unit=offlineimap-oneshot.service
 
