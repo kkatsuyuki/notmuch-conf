@@ -104,9 +104,9 @@ layout: default
 *** Systemd service configuration
      On above settings =offlineimap= command fetch e-mails from the remote server.
      Next =offlineimap= is configured to be automatically executed. 
-     There is another way such that adding =autorefresh= to =~/.offlineimaprc=
+     There is another way of adding =autorefresh= to =~/.offlineimaprc=
      , which is not necessary restarted when internet is disconnected, so
-     I decided to use "systemd/user timer". It execute the target unit file 
+     I decided to use =systemd.timer=. It execute the target unit file 
      periodically. The target is one-shot service that execute =offlineimap=. 
 
      Copy installed =offlineimap.timer=, =offlineimap.service= and 

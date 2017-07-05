@@ -162,9 +162,9 @@ nametrans = lambda foldername: re.sub('^\[Gmail\]/All Mail$', 'all',foldername)
 <p>
 On above settings <code>offlineimap</code> command fetch e-mails from the remote server.
 Next <code>offlineimap</code> is configured to be automatically executed. 
-There is another way such that adding <code>autorefresh</code> to <code>~/.offlineimaprc</code>
+There is another way of adding <code>autorefresh</code> to <code>~/.offlineimaprc</code>
 , which is not necessary restarted when internet is disconnected, so
-I decided to use "systemd/user timer". It execute the target unit file 
+I decided to use <code>systemd.timer</code>. It execute the target unit file 
 periodically. The target is one-shot service that execute <code>offlineimap</code>. 
 </p>
 
@@ -191,6 +191,7 @@ Unit=offlineimap-oneshot.service
 
 [Install]
 WantedBy=mail.target
+
 </pre>
 
 <p>
