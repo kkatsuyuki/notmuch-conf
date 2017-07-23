@@ -1,6 +1,36 @@
 ---
 layout: default
 ---
+<div id="table-of-contents">
+    <h2>Table of Contents</h2>
+    <div id="text-table-of-contents">
+        <ul>
+            <li><a href="#org061231c">Motivation</a></li>
+            <li><a href="#orgb51e549">Softwares</a></li>
+            <li><a href="#org987a77d">Install</a></li>
+            <li><a href="#orgb114f83">Configurations</a>
+                <ul>
+                    <li><a href="#org0c74a96">Goal</a></li>
+                    <li><a href="#org3e7d33a">Offlineimap</a>
+                        <ul>
+                            <li><a href="#org1dd22eb">Offlineimap</a></li>
+                            <li><a href="#orgeb16d6a">Systemd service configuration</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#org8fbbcb4">Notmuch</a></li>
+                    <li><a href="#org6e42d4d">emacs</a>
+                        <ul>
+                            <li><a href="#org22e406c">Notmuch emacs interface</a></li>
+                            <li><a href="#org0232f38">Message mode</a></li>
+                            <li><a href="#org1d9ce12">offlineimap execution on emacs</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
 <div id="outline-container-org061231c" class="outline-2">
 <h2 id="org061231c">Motivation</h2>
 <div class="outline-text-2" id="text-org061231c">
@@ -8,12 +38,12 @@ layout: default
 As Emacs user I always want to use Emacs interface to edit documents.
 When I write e-mails, I also do, so
 I tried to introduce <code>notmuch</code>, <code>emacs</code> and <code>offlineimap</code>.
-As a result I feel <code>notmuch</code> on <code>emacs</code> is very useful in terms of tagging, 
-searching, and emacs interface. 
+As a result I feel <code>notmuch</code> on <code>emacs</code> is very useful in terms of tagging,
+searching, and emacs interface.
 </p>
 
 <p>
-Some configurations below were not on the web, so I note here. 
+Some configurations below were not on the web, so I note here.
 If you follow my way to handle e-mails, this may help you.
 </p>
 </div>
@@ -46,7 +76,7 @@ software to synchronize your local mailbox with the mail server via IMAP
 <h2 id="org987a77d">Install</h2>
 <div class="outline-text-2" id="text-org987a77d">
 <p>
-Refer to above links. I think you should use the package system on your OS.
+Refer to above links. I think you should use the package system of your OS.
 </p>
 </div>
 </div>
@@ -54,14 +84,13 @@ Refer to above links. I think you should use the package system on your OS.
 <div id="outline-container-orgb114f83" class="outline-2">
 <h2 id="orgb114f83">Configurations</h2>
 <div class="outline-text-2" id="text-orgb114f83">
-</div><div id="outline-container-orga18eaf7" class="outline-3">
-<h3 id="orga18eaf7">Direction</h3>
-<div class="outline-text-3" id="text-orga18eaf7">
+</div><div id="outline-container-org0c74a96" class="outline-3">
+<h3 id="org0c74a96">Goal</h3>
+<div class="outline-text-3" id="text-org0c74a96">
 <ol class="org-ol">
-<li>Automatically synchronize local mailbox with your mail server</li>
-<li>Automatically assign the basic tags to some mails like Gmail</li>
+<li>Automatically synchronize local mailbox with your gmail server</li>
 <li><p>
-Frequently refresh the mailbox
+Automatically assign the basic tags to some mails like Gmail
 </p>
 
 <p>
@@ -71,161 +100,208 @@ I set up some below configurations referring to <a href="http://chrisdone.com/po
 </div>
 </div>
 
-<div id="outline-container-orgd9732f2" class="outline-3">
-<h3 id="orgd9732f2">Offlineimap</h3>
-<div class="outline-text-3" id="text-orgd9732f2">
+<div id="outline-container-org3e7d33a" class="outline-3">
+<h3 id="org3e7d33a">Offlineimap</h3>
+<div class="outline-text-3" id="text-org3e7d33a">
+</div><div id="outline-container-org1dd22eb" class="outline-4">
+<h4 id="org1dd22eb">Offlineimap</h4>
+<div class="outline-text-4" id="text-org1dd22eb">
 <p>
-Offlineimap needs its configuration file, so first copy the installed minimum 
-config file <code>offlineimap.conf.minimal</code> and edit it. 
+Configure <code>offlineimap</code> to fetch emails from your gmail server.
+</p>
+
+<ol class="org-ol">
+<li><p>
+Copy the default config file
 </p>
 <pre class="example">
-cp offlineimap.conf.minimal ~/.offlineimaprc
+$ cp offlineimap.conf.minimal ~/.offlineimaprc
 </pre>
 <p>
-If you set <code>$XDG_CONFIG_HOME</code>, instead you should execute
+If you set <code>$XDG_CONFIG_HOME</code>, instead you should
 </p>
 <pre class="example">
-cp offlineimap.conf.minimal $XDG_CONFIG_HOME/offlineimap/config
-</pre>
-
-<p>
-My config file <code>$XDG_CONFIG_HOME/offlineimap/config</code> is 
-</p>
-<pre class="example">
-[general]
-accounts = Accountname
-maxsyncaccounts = 1
-
-[Account Accountname]
-localrepository = Accountname-Local
-remoterepository = Accountname-Remote
-synclabels = yes
-
-postsynchook = ~/.config/offlineimap/postsync.sh
-
-[Repository Accountname-Local]
-type = GmailMaildir
-localfolders = ~/mail/Accountname
-
-[Repository Accountname-Remote]
-type = Gmail
-remoteuser = Accountname@gmail.com
-remotepass = yourpassword
-
-sslcacertfile = /etc/ssl/certs/ca-certificates.crt
-
-folderfilter = lambda foldername: foldername in ['[Gmail]/All Mail']
-nametrans = lambda foldername: re.sub('^\[Gmail\]/All Mail$', 'all',foldername)
-</pre>
-<p>
-Account/User names and paths should be changed appropriately.
-Since I use Gmail, above is its configuration. These settings are basically 
-to fetch e-mails from <code>Accountname@gmail.com</code>, so only some special settings 
-are picked up.
+$ cp offlineimap.conf.minimal $XDG_CONFIG_HOME/offlineimap/config
+</pre></li>
+<li><p>
+Edit the config file
 </p>
 
 <p>
-Every time the local mailbox is synchronized, 
-the notmuch commands for refreshing and tagging should be executed.
-That's why the shell-script <code>postsync.sh</code> including these commands are hooked.
-<code>postsync.sh</code> is displayed on the latter.
+My config file <code>$XDG_CONFIG_HOME/offlineimap/config</code> is
 </p>
-<pre class="example">
-postsynchook = ~/.config/offlineimap/postsync.sh
-</pre>
+<pre class="nomargin">$XDG_CONFIG_HOME/offlineimap/config</pre>
 
-<p>
-To synchronize Gmail account need the certification file because of 
-SSL connection. Put your local SSL certification file to <code>sslcacertfile</code>.
-</p>
-<pre class="example">
-sslcacertfile = /etc/ssl/certs/ca-certificates.crt
-</pre>
+<div class="org-src-container">
+<pre class="src src-conf-unix">[<span class="org-type">general</span>]
+<span class="org-variable-name">accounts</span> = Accountname
+<span class="org-variable-name">maxsyncaccounts</span> = 1
 
-<p>
-Gmail has many folders (tags?) in its default and these folders share 
-some e-mails. If all folders are synchronized to the local folder, 
-the same e-mail is downloaded to multiple folders. Therefore, only 
-"All Mail" on Gmail is synchronized and the local folder name is 
-changed to "all" for simplicity.
-</p>
-<pre class="example">
-folderfilter = lambda foldername: foldername in ['[Gmail]/All Mail']
-nametrans = lambda foldername: re.sub('^\[Gmail\]/All Mail$', 'all',foldername)
+[<span class="org-type">Account Accountname</span>]
+<span class="org-variable-name">localrepository</span> = Accountname-Local
+<span class="org-variable-name">remoterepository</span> = Accountname-Remote
+<span class="org-variable-name">synclabels</span> = yes
+
+<span class="org-variable-name">postsynchook</span> = ~/.config/offlineimap/postsync.sh
+
+[<span class="org-type">Repository Accountname-Local</span>]
+<span class="org-variable-name">type</span> = GmailMaildir
+<span class="org-variable-name">localfolders</span> = ~/mail/Accountname
+
+[<span class="org-type">Repository Accountname-Remote</span>]
+<span class="org-variable-name">type</span> = Gmail
+<span class="org-variable-name">remoteuser</span> = Accountname@gmail.com
+<span class="org-variable-name">remotepass</span> = yourpassword
+
+<span class="org-variable-name">sslcacertfile</span> = /etc/ssl/certs/ca-certificates.crt
+
+<span class="org-variable-name">folderfilter</span> = lambda foldername: foldername in [<span class="org-string">'[Gmail]/All Mail'</span>]
+<span class="org-variable-name">nametrans</span> = lambda foldername: re.sub(<span class="org-string">'^\[Gmail\]/All Mail$'</span>, <span class="org-string">'all'</span>,foldername)
 </pre>
 </div>
 
+<p>
+<b>Note that</b>
+</p>
+<ul class="org-ul">
+<li>To use this, we should change <code>Accountname</code>, <code>yourpassword</code> appropriately.</li>
+<li>We have to change the path of <code>postsysnchook</code>, <code>sslcacertfile</code> to adjust our environment.</li>
+</ul>
+<p>
+<b>Configuration details</b>
+</p>
+
+<ul class="org-ul">
+<li><p>
+Every time the local mailbox is synchronized,
+the notmuch commands for refreshing and tagging should be executed.
+That's why the shell-script <code>postsync.sh</code>, which is described later,
+are hooked.
+</p>
+<div class="org-src-container">
+<pre class="src src-conf-unix"><span class="org-variable-name">postsynchook</span> = ~/.config/offlineimap/postsync.sh
+</pre>
+</div></li>
+
+<li><p>
+To synchronize Gmail account, need the certification file due to
+SSL connection. Put your local SSL certification file to <code>sslcacertfile</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-conf-unix"><span class="org-variable-name">sslcacertfile</span> = /etc/ssl/certs/ca-certificates.crt
+</pre>
+</div></li>
+
+<li><p>
+Gmail has many virtual folders linked to its tags
+and these folders share some e-mails.
+If all folders are synchronized to the local,
+the same e-mail is downloaded to multiple folders. Therefore, only
+"All Mail" on Gmail is synchronized and its local folder name is
+changed to "all" for simplicity.
+</p>
+<div class="org-src-container">
+<pre class="src src-conf-unix"><span class="org-variable-name">folderfilter</span> = lambda foldername: foldername in [<span class="org-string">'[Gmail]/All Mail'</span>]
+<span class="org-variable-name">nametrans</span> = lambda foldername: re.sub(<span class="org-string">'^\[Gmail\]/All Mail$'</span>, <span class="org-string">'all'</span>,foldername)
+</pre>
+</div></li>
+</ul></li>
+
+<li><p>
+To see <code>offlineimap</code> to work well, execute
+</p>
+<pre class="example">
+$ offlineimap
+</pre>
+<p>
+, and if <code>~/mail/Accountname/all/</code> is created and your mails
+are stored under the folder, it works well.
+</p></li>
+</ol>
+</div>
+</div>
 
 <div id="outline-container-orgeb16d6a" class="outline-4">
 <h4 id="orgeb16d6a">Systemd service configuration</h4>
 <div class="outline-text-4" id="text-orgeb16d6a">
 <p>
-On above settings <code>offlineimap</code> command fetch e-mails from the remote server.
-Next <code>offlineimap</code> is configured to be automatically executed. 
-There is another way of adding <code>autorefresh</code> to <code>~/.offlineimaprc</code>
-, which is not necessary restarted when internet is disconnected, so
-I decided to use <code>systemd.timer</code>. It execute the target unit file 
-periodically. The target is one-shot service that execute <code>offlineimap</code>. 
+On above settings <code>offlineimap</code> can fetch e-mails from your gmail server.
+Next <code>offlineimap</code> is configured to be automatically executed.
+I decided to use <code>systemd.timer</code>, which execute the target
+unit file periodically.
+The target is one-shot service that execute <code>offlineimap</code>.
 </p>
 
-<p>
-Copy installed <code>offlineimap.timer</code>, <code>offlineimap.service</code> and 
+<ol class="org-ol">
+<li><p>
+Copy installed <code>offlineimap.timer</code>, <code>offlineimap.service</code> and
 <code>mail.target</code> to <code>~/.config/systemd/user/</code>.
 </p>
 <pre class="example">
-cp offlineimap.timer offlineimap.service mail.target ~/.config/systemd/user/
-</pre>
+$ cp offlineimap.timer offlineimap.service mail.target ~/.config/systemd/user/
+</pre></li>
 
-<p>
-I edited <code>offlineimap.timer</code>  to execute <code>offlineimap-oneshot.service</code> 
-soon (5sec) after systemd startup and every 2 minutes.
+<li><p>
+(Optional) I edited <code>offlineimap.timer</code>  to execute
+<code>offlineimap-oneshot.service</code> soon (1m)
+after systemd startup and every 5 minutes.
 </p>
-<pre class="example">
-[Unit]
-Description=Offlineimap Query Timer
-
-[Timer]
-OnStartupSec=5
-OnUnitInactiveSec=2m
-Unit=offlineimap-oneshot.service
-
-[Install]
-WantedBy=mail.target
-
+<pre class="nomargin">
+~/.config/systemd/user/offlineimap.timer
 </pre>
+<div class="org-src-container">
+<pre class="src src-conf-unix">[<span class="org-type">Unit</span>]
+<span class="org-variable-name">Description</span>=Offlineimap Query Timer
 
-<p>
-On <code>offlineimap-oneshot.service</code> I commented out <code>[Install]</code> section to 
-make it a static service, otherwise this service is executed on every startup
+[<span class="org-type">Timer</span>]
+<span class="org-variable-name">OnStartupSec</span>=1m
+<span class="org-variable-name">OnUnitInactiveSec</span>=5m
+<span class="org-variable-name">Unit</span>=offlineimap-oneshot.service
+
+[<span class="org-type">Install</span>]
+<span class="org-variable-name">WantedBy</span>=mail.target
+</pre>
+</div></li>
+
+<li><p>
+On <code>offlineimap-oneshot.service</code>, comment out
+<code>[Install]</code> section to make it a static service,
+otherwise this service is executed on every startup
 and slows its process.
 </p>
-<pre class="example">
-[Unit]
-Description=Offlineimap Service (oneshot)
 
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/offlineimap -o -u syslog
-# Give 12 seconds for offlineimap to gracefully stop before hard killing it.
-TimeoutStopSec=12
-# Restart=on-watchdog
-# WatchdogSec=300
-
-# [Install]
-# WantedBy=mail.target
+<pre class="nomargin">
+~/.config/systemd/user/offlineimap-oneshot.service
 </pre>
+<div class="org-src-container">
+<pre class="src src-conf-unix">[<span class="org-type">Unit</span>]
+<span class="org-variable-name">Description</span>=Offlineimap Service (oneshot)
 
-<p>
-After edit, these files should be effective.
+[<span class="org-type">Service</span>]
+<span class="org-variable-name">Type</span>=oneshot
+<span class="org-variable-name">ExecStart</span>=/usr/bin/offlineimap -o -u syslog
+<span class="org-comment-delimiter"># </span><span class="org-comment">Give 12 seconds for offlineimap to gracefully stop before hard killing it.</span>
+<span class="org-variable-name">TimeoutStopSec</span>=12
+<span class="org-comment-delimiter"># </span><span class="org-comment">Restart=on-watchdog</span>
+<span class="org-comment-delimiter"># </span><span class="org-comment">WatchdogSec=300</span>
+
+<span class="org-comment-delimiter"># </span><span class="org-comment">[Install]</span>
+<span class="org-comment-delimiter"># </span><span class="org-comment">WantedBy=mail.target</span>
+</pre>
+</div></li>
+
+<li><p>
+Make These files effective.
 </p>
 <pre class="example">
 $ systemctl --user enable mail.target
 $ systemctl --user enable offlineimap-oneshot.service
 $ systemctl --user enable offlineimap.timer
-</pre>
+</pre></li>
+</ol>
 
 <p>
-By these settings 1st and 3rd directions are satisfied.
+By these settings the 1st goal are satisfied.
 </p>
 </div>
 </div>
@@ -235,34 +311,50 @@ By these settings 1st and 3rd directions are satisfied.
 <h3 id="org8fbbcb4">Notmuch</h3>
 <div class="outline-text-3" id="text-org8fbbcb4">
 <p>
+<code>Notmuch</code> is an email tag system, it makes very easier to find and arrange
+emails. It also provides <code>emacs</code> interface. In this section, create
+its database and the folder which stores it, and configure auto refresh and
+auto tagging.
+</p>
+
+<ol class="org-ol">
+<li><p>
 Executing <code>notmuch</code> for the first time, interactive setup is appeared.
-Following the guide input your user name, mail address and local mail folder,
-which is needed to be the upper directory or the same as offlineimap's local
-directory, and the config file
-<code>.notmuch-config</code> is created. After configuring, execute 
+Following the guide input your user name, mail address
+and local mail folder, which needs to be the upper directory
+or the same as offlineimap's local directory (I set <code>~/mail/</code>),
+and the config file
+<code>~/.notmuch-config</code> is created. After configuring, execute
 </p>
 <pre class="example">
-notmuch new
+$ notmuch new
 </pre>
+<p>
+, then the mail database file is created.
+</p>
 
 <p>
-and make the database file from your local e-mails.
-This command, which is also used to refresh 
-the notmuch database file, should be 
-executed every time <code>offlineimap</code> fetches e-mails from the server.
-Moreover tagging should also be executed to follow 2nd direction.
-Therefore <code>postsync.sh</code> we described above is the following.
+This command also refreshes the notmuch database file.
+</p></li>
+
+<li><p>
+To refresh the database and tag emails every time
+<code>offlineimap</code> fetches e-mails from the server,
+edit <code>postsync.sh</code> described above.
 </p>
-<pre class="example">
-notmuch new
+<pre class="nomargin">~/.config/offlineimap/postsync.sh</pre>
+<div class="org-src-container">
+<pre class="src src-sh">notmuch new
 notmuch tag -inbox +sent from:Accountname@gmail.com
 </pre>
+</div>
 
 <p>
-<code>notmuch tag -inbox +sent from:Accountname@gmail.com</code> means 
-the <code>inbox</code> tag is removed and the <code>sent</code> tag is added 
+<code>notmuch tag -inbox +sent from:Accountname@gmail.com</code> means
+the <code>inbox</code> tag is removed and the <code>sent</code> tag is added
 regarding the e-mails sent from <code>Accountname@gmail.com</code>.
-</p>
+</p></li>
+</ol>
 </div>
 </div>
 
@@ -273,17 +365,22 @@ regarding the e-mails sent from <code>Accountname@gmail.com</code>.
 <h4 id="org22e406c">Notmuch emacs interface</h4>
 <div class="outline-text-4" id="text-org22e406c">
 <p>
-Notmuch emacs interface files mostly have already been installed 
-with <code>Notmuch</code>. To load the interface files when the emacs command 
+Notmuch emacs interface files mostly have already been installed
+with <code>Notmuch</code>. To load the interface files when the emacs command
 <code>notmuch</code> is executed, the following is added to your emacs config file
 (<code>~/.emacs</code>, <code>~/.emacs.el</code>, or <code>~/.emacs.d/init.el</code>).
 </p>
-<pre class="example">
-(autoload 'notmuch "notmuch" "notmuch mail" t)
+<pre class="nomargin">
+~/.emacs, ~/.emacs.el, or ~/.emacs.d/init.el
 </pre>
 
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span class="org-rainbow-delimiters-depth-1">(</span>autoload 'notmuch <span class="org-string">"notmuch"</span> <span class="org-doc">"notmuch mail"</span> t<span class="org-rainbow-delimiters-depth-1">)</span>
+</pre>
+</div>
+
 <p>
-If you configure more, you should use Emacs customization interface 
+If you configure more, you should use Emacs customization interface
 executing the command <code>M-x customize-group RET notmuch RET</code>.
 </p>
 </div>
@@ -293,35 +390,82 @@ executing the command <code>M-x customize-group RET notmuch RET</code>.
 <h4 id="org0232f38">Message mode</h4>
 <div class="outline-text-4" id="text-org0232f38">
 <p>
-Using <code>notmuch</code> on <code>emacs</code>, you will use <code>message-mode</code> when 
-you compose e-mails. The configuration of <code>message-mode</code> is introduced 
-here.
+Using <code>notmuch</code> on <code>emacs</code>, you will use <code>message-mode</code> when
+you compose emails. The configuration of <code>message-mode</code> is
 </p>
-<pre class="example">
-;; setup the mail address and use name
-(setq mail-user-agent 'message-user-agent)
-(setq user-mail-address "Accountname@gmail.com"
-      user-full-name "Accountname")
-;; smtp config
-(setq smtpmail-smtp-server "smtp.gmail.com"
-      message-send-mail-function 'message-smtpmail-send-it)
-
-;; report problems with the smtp server
-(setq smtpmail-debug-info t)
-;; add Cc and Bcc headers to the message buffer
-(setq message-default-mail-headers "Cc: \nBcc: \n")
-;; postponed message is put in the following draft directory
-(setq message-auto-save-directory "~/mail/draft")
-(setq message-kill-buffer-on-exit t)
-;; change the directory to store the sent mail
-(setq message-directory "~/mail/")
+<pre class="nomargin">
+~/.emacs, ~/.emacs.el, or ~/.emacs.d/init.el
 </pre>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">setup the mail address and use name</span>
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">setq</span> mail-user-agent 'message-user-agent<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">setq</span> user-mail-address <span class="org-string">"Accountname@gmail.com"</span>
+      user-full-name <span class="org-string">"Accountname"</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">smtp config</span>
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">setq</span> smtpmail-smtp-server <span class="org-string">"smtp.gmail.com"</span>
+      message-send-mail-function 'message-smtpmail-send-it<span class="org-rainbow-delimiters-depth-1">)</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">report problems with the smtp server</span>
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">setq</span> smtpmail-debug-info t<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">add Cc and Bcc headers to the message buffer</span>
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">setq</span> message-default-mail-headers <span class="org-string">"Cc: \nBcc: \n"</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">postponed message is put in the following draft directory</span>
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">setq</span> message-auto-save-directory <span class="org-string">"~/mail/draft"</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">setq</span> message-kill-buffer-on-exit t<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">change the directory to store the sent mail</span>
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">setq</span> message-directory <span class="org-string">"~/mail/"</span><span class="org-rainbow-delimiters-depth-1">)</span>
+</pre>
+</div>
 
 <p>
 On this config the Gmail server is used as smtp server.
-Sent and draft mails should be put in the directory Notmuch can 
-read. 
+Sent and draft mails should be put in the directory Notmuch can
+read.
 </p>
+</div>
+</div>
+
+<div id="outline-container-org1d9ce12" class="outline-4">
+<h4 id="org1d9ce12">offlineimap execution on emacs</h4>
+<div class="outline-text-4" id="text-org1d9ce12">
+<p>
+Using the notmuch emacs interface, I often refresh my local mail box
+from emacs. Followings are the configuration to execute <code>offlineimap</code>
+on <code>emacs</code>.
+</p>
+
+<pre class="nomargin">
+~/.emacs, ~/.emacs.el, or ~/.emacs.d/init.el
+</pre>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defun</span> <span class="org-function-name">notmuch-exec-offlineimap</span> <span class="org-rainbow-delimiters-depth-2">()</span>
+    <span class="org-doc">"execute offlineimap"</span>
+    <span class="org-rainbow-delimiters-depth-2">(</span><span class="org-keyword">interactive</span><span class="org-rainbow-delimiters-depth-2">)</span>
+    <span class="org-rainbow-delimiters-depth-2">(</span>set-process-sentinel
+     <span class="org-rainbow-delimiters-depth-3">(</span>start-process-shell-command <span class="org-string">"offlineimap"</span>
+                                  <span class="org-string">"*offlineimap*"</span>
+                                  <span class="org-string">"offlineimap -o"</span><span class="org-rainbow-delimiters-depth-3">)</span>
+     '<span class="org-rainbow-delimiters-depth-3">(</span>lambda <span class="org-rainbow-delimiters-depth-4">(</span>process event<span class="org-rainbow-delimiters-depth-4">)</span>
+        <span class="org-rainbow-delimiters-depth-4">(</span>notmuch-refresh-all-buffers<span class="org-rainbow-delimiters-depth-4">)</span>
+        <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-rainbow-delimiters-depth-6">(</span>w <span class="org-rainbow-delimiters-depth-7">(</span>get-buffer-window <span class="org-string">"*offlineimap*"</span><span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span><span class="org-rainbow-delimiters-depth-5">)</span>
+          <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-keyword">when</span> w
+            <span class="org-rainbow-delimiters-depth-6">(</span><span class="org-keyword">with-selected-window</span> w <span class="org-rainbow-delimiters-depth-7">(</span>recenter <span class="org-rainbow-delimiters-depth-8">(</span>window-end<span class="org-rainbow-delimiters-depth-8">)</span><span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span><span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span>
+    <span class="org-rainbow-delimiters-depth-2">(</span>popwin:display-buffer <span class="org-string">"*offlineimap*"</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>add-to-list 'popwin:special-display-config
+             '<span class="org-rainbow-delimiters-depth-2">(</span><span class="org-string">"*offlineimap*"</span> <span class="org-builtin">:dedicated</span> t <span class="org-builtin">:position</span> bottom <span class="org-builtin">:stick</span> t
+               <span class="org-builtin">:height</span> <span class="org-highlight-numbers-number">0.4</span> <span class="org-builtin">:noselect</span> t<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+</pre>
+</div>
+
+<p>
+<b>Configuration details</b>
+</p>
+<ul class="org-ul">
+<li>Used sentinel to refresh all notmuch-related buffers and the end
+of the output of <code>offlineimap</code> is shown on <code>*offlineimap*</code> buffer.</li>
+<li><code>*offlineimap*</code> buffer is shown with popwin of emacs <code>popwin</code> package.</li>
+</ul>
 </div>
 </div>
 </div>

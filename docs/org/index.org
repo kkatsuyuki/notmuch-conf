@@ -7,12 +7,12 @@ layout: default
   As Emacs user I always want to use Emacs interface to edit documents.
   When I write e-mails, I also do, so
   I tried to introduce =notmuch=, =emacs= and =offlineimap=.
-  As a result I feel =notmuch= on =emacs= is very useful in terms of tagging, 
-  searching, and emacs interface. 
+  As a result I feel =notmuch= on =emacs= is very useful in terms of tagging,
+  searching, and emacs interface.
 
-  Some configurations below were not on the web, so I note here. 
+  Some configurations below were not on the web, so I note here.
   If you follow my way to handle e-mails, this may help you.
-  
+
 * Softwares
   - emacs
   - [[https://notmuchmail.org/#index3h2][Notmuch]]
@@ -23,185 +23,230 @@ layout: default
     software to synchronize your local mailbox with the mail server via IMAP
 
 * Install
-  Refer to above links. I think you should use the package system on your OS.
+  Refer to above links. I think you should use the package system of your OS.
 
 * Configurations
-** Direction
-   1. Automatically synchronize local mailbox with your mail server
+** Goal
+   1. Automatically synchronize local mailbox with your gmail server
    2. Automatically assign the basic tags to some mails like Gmail
-   3. Frequently refresh the mailbox
-   
-     I set up some below configurations referring to [[http://chrisdone.com/posts/emacs-mail][Emacs, Notmuch and Offlineimap]].
+
+      I set up some below configurations referring to [[http://chrisdone.com/posts/emacs-mail][Emacs, Notmuch and Offlineimap]].
 
 ** Offlineimap
-    Offlineimap needs its configuration file, so first copy the installed minimum 
-    config file =offlineimap.conf.minimal= and edit it. 
-    #+BEGIN_EXAMPLE
-    cp offlineimap.conf.minimal ~/.offlineimaprc
-    #+END_EXAMPLE
-    If you set =$XDG_CONFIG_HOME=, instead you should execute
-    #+BEGIN_EXAMPLE
-    cp offlineimap.conf.minimal $XDG_CONFIG_HOME/offlineimap/config
-    #+END_EXAMPLE
-    
-    My config file =$XDG_CONFIG_HOME/offlineimap/config= is 
-    #+BEGIN_EXAMPLE
-    [general]
-    accounts = Accountname
-    maxsyncaccounts = 1
-     
-    [Account Accountname]
-    localrepository = Accountname-Local
-    remoterepository = Accountname-Remote
-    synclabels = yes
-     
-    postsynchook = ~/.config/offlineimap/postsync.sh
-     
-    [Repository Accountname-Local]
-    type = GmailMaildir
-    localfolders = ~/mail/Accountname
-     
-    [Repository Accountname-Remote]
-    type = Gmail
-    remoteuser = Accountname@gmail.com
-    remotepass = yourpassword
-     
-    sslcacertfile = /etc/ssl/certs/ca-certificates.crt
-     
-    folderfilter = lambda foldername: foldername in ['[Gmail]/All Mail']
-    nametrans = lambda foldername: re.sub('^\[Gmail\]/All Mail$', 'all',foldername)
-    #+END_EXAMPLE
-    Account/User names and paths should be changed appropriately.
-    Since I use Gmail, above is its configuration. These settings are basically 
-    to fetch e-mails from =Accountname@gmail.com=, so only some special settings 
-    are picked up.
+*** Offlineimap
+      Configure =offlineimap= to fetch emails from your gmail server.
 
-    Every time the local mailbox is synchronized, 
-    the notmuch commands for refreshing and tagging should be executed.
-    That's why the shell-script =postsync.sh= including these commands are hooked.
-    =postsync.sh= is displayed on the latter.
-    #+BEGIN_EXAMPLE
-    postsynchook = ~/.config/offlineimap/postsync.sh
-    #+END_EXAMPLE
+      1. Copy the default config file
+         #+BEGIN_EXAMPLE
+         $ cp offlineimap.conf.minimal ~/.offlineimaprc
+         #+END_EXAMPLE
+         If you set =$XDG_CONFIG_HOME=, instead you should
+         #+BEGIN_EXAMPLE
+         $ cp offlineimap.conf.minimal $XDG_CONFIG_HOME/offlineimap/config
+         #+END_EXAMPLE
+      2. Edit the config file
 
-    To synchronize Gmail account need the certification file because of 
-    SSL connection. Put your local SSL certification file to =sslcacertfile=.
-    #+BEGIN_EXAMPLE
-    sslcacertfile = /etc/ssl/certs/ca-certificates.crt
-    #+END_EXAMPLE
+         My config file =$XDG_CONFIG_HOME/offlineimap/config= is
+         #+BEGIN_EXPORT html
+         <pre class="nomargin">$XDG_CONFIG_HOME/offlineimap/config</pre>
+         #+END_EXPORT
 
-    Gmail has many folders (tags?) in its default and these folders share 
-    some e-mails. If all folders are synchronized to the local folder, 
-    the same e-mail is downloaded to multiple folders. Therefore, only 
-    "All Mail" on Gmail is synchronized and the local folder name is 
-    changed to "all" for simplicity.
-    #+BEGIN_EXAMPLE
-    folderfilter = lambda foldername: foldername in ['[Gmail]/All Mail']
-    nametrans = lambda foldername: re.sub('^\[Gmail\]/All Mail$', 'all',foldername)
-    #+END_EXAMPLE
+         #+BEGIN_SRC conf-unix
+         [general]
+         accounts = Accountname
+         maxsyncaccounts = 1
 
-    
+         [Account Accountname]
+         localrepository = Accountname-Local
+         remoterepository = Accountname-Remote
+         synclabels = yes
+
+         postsynchook = ~/.config/offlineimap/postsync.sh
+
+         [Repository Accountname-Local]
+         type = GmailMaildir
+         localfolders = ~/mail/Accountname
+
+         [Repository Accountname-Remote]
+         type = Gmail
+         remoteuser = Accountname@gmail.com
+         remotepass = yourpassword
+
+         sslcacertfile = /etc/ssl/certs/ca-certificates.crt
+
+         folderfilter = lambda foldername: foldername in ['[Gmail]/All Mail']
+         nametrans = lambda foldername: re.sub('^\[Gmail\]/All Mail$', 'all',foldername)
+         #+END_SRC
+
+         *Note that*
+         - To use this, we should change =Accountname=, =yourpassword= appropriately.
+         - We have to change the path of =postsysnchook=, =sslcacertfile= to adjust our environment.
+
+         *Configuration details*
+
+         - Every time the local mailbox is synchronized,
+           the notmuch commands for refreshing and tagging should be executed.
+           That's why the shell-script =postsync.sh=, which is described later,
+           are hooked.
+           #+BEGIN_SRC conf-unix
+           postsynchook = ~/.config/offlineimap/postsync.sh
+           #+END_SRC
+
+         - To synchronize Gmail account, need the certification file due to
+           SSL connection. Put your local SSL certification file to =sslcacertfile=.
+           #+BEGIN_SRC conf-unix
+           sslcacertfile = /etc/ssl/certs/ca-certificates.crt
+           #+END_SRC
+
+         - Gmail has many virtual folders linked to its tags
+           and these folders share some e-mails.
+           If all folders are synchronized to the local,
+           the same e-mail is downloaded to multiple folders. Therefore, only
+           "All Mail" on Gmail is synchronized and its local folder name is
+           changed to "all" for simplicity.
+           #+BEGIN_SRC conf-unix
+           folderfilter = lambda foldername: foldername in ['[Gmail]/All Mail']
+           nametrans = lambda foldername: re.sub('^\[Gmail\]/All Mail$', 'all',foldername)
+           #+END_SRC
+
+      3. To see =offlineimap= to work well, execute
+         #+BEGIN_EXAMPLE
+         $ offlineimap
+         #+END_EXAMPLE
+         , and if =~/mail/Accountname/all/= is created and your mails
+         are stored under the folder, it works well.
+
 *** Systemd service configuration
-     On above settings =offlineimap= command fetch e-mails from the remote server.
-     Next =offlineimap= is configured to be automatically executed. 
-     There is another way of adding =autorefresh= to =~/.offlineimaprc=
-     , which is not necessary restarted when internet is disconnected, so
-     I decided to use =systemd.timer=. It execute the target unit file 
-     periodically. The target is one-shot service that execute =offlineimap=. 
+    On above settings =offlineimap= can fetch e-mails from your gmail server.
+    Next =offlineimap= is configured to be automatically executed.
+    I decided to use =systemd.timer=, which execute the target
+    unit file periodically.
+    The target is one-shot service that execute =offlineimap=.
 
-     Copy installed =offlineimap.timer=, =offlineimap.service= and 
-     =mail.target= to =~/.config/systemd/user/=.
-     #+BEGIN_EXAMPLE
-     cp offlineimap.timer offlineimap.service mail.target ~/.config/systemd/user/
-     #+END_EXAMPLE
+    1. Copy installed =offlineimap.timer=, =offlineimap.service= and
+       =mail.target= to =~/.config/systemd/user/=.
+       #+BEGIN_EXAMPLE
+       $ cp offlineimap.timer offlineimap.service mail.target ~/.config/systemd/user/
+       #+END_EXAMPLE
 
-     I edited =offlineimap.timer=  to execute =offlineimap-oneshot.service= 
-     soon (5sec) after systemd startup and every 2 minutes.
-     #+BEGIN_EXAMPLE
-     [Unit]
-     Description=Offlineimap Query Timer
-      
-     [Timer]
-     OnStartupSec=5
-     OnUnitInactiveSec=2m
-     Unit=offlineimap-oneshot.service
-      
-     [Install]
-     WantedBy=mail.target
+    2. (Optional) I edited =offlineimap.timer=  to execute
+       =offlineimap-oneshot.service= soon (1m)
+       after systemd startup and every 5 minutes.
+       #+BEGIN_EXPORT html
+       <pre class="nomargin">
+       ~/.config/systemd/user/offlineimap.timer
+       </pre>
+       #+END_EXPORT
+       #+BEGIN_SRC conf-unix
+       [Unit]
+       Description=Offlineimap Query Timer
 
-     #+END_EXAMPLE
-     
-     On =offlineimap-oneshot.service= I commented out =[Install]= section to 
-     make it a static service, otherwise this service is executed on every startup
-     and slows its process.
-     #+BEGIN_EXAMPLE
-     [Unit]
-     Description=Offlineimap Service (oneshot)
-      
-     [Service]
-     Type=oneshot
-     ExecStart=/usr/bin/offlineimap -o -u syslog
-     # Give 12 seconds for offlineimap to gracefully stop before hard killing it.
-     TimeoutStopSec=12
-     # Restart=on-watchdog
-     # WatchdogSec=300
-      
-     # [Install]
-     # WantedBy=mail.target
-     #+END_EXAMPLE     
+       [Timer]
+       OnStartupSec=1m
+       OnUnitInactiveSec=5m
+       Unit=offlineimap-oneshot.service
 
-     After edit, these files should be effective.
-     #+BEGIN_EXAMPLE
-     $ systemctl --user enable mail.target
-     $ systemctl --user enable offlineimap-oneshot.service
-     $ systemctl --user enable offlineimap.timer
-     #+END_EXAMPLE
-     
-     By these settings 1st and 3rd directions are satisfied.
-     
-** Notmuch     
-    Executing =notmuch= for the first time, interactive setup is appeared.
-    Following the guide input your user name, mail address and local mail folder,
-    which is needed to be the upper directory or the same as offlineimap's local
-    directory, and the config file
-    =.notmuch-config= is created. After configuring, execute 
-    #+BEGIN_EXAMPLE
-    notmuch new
-    #+END_EXAMPLE
+       [Install]
+       WantedBy=mail.target
+       #+END_SRC
 
-    and make the database file from your local e-mails.
-    This command, which is also used to refresh 
-    the notmuch database file, should be 
-    executed every time =offlineimap= fetches e-mails from the server.
-    Moreover tagging should also be executed to follow 2nd direction.
-    Therefore =postsync.sh= we described above is the following.
-    #+BEGIN_EXAMPLE
-    notmuch new
-    notmuch tag -inbox +sent from:Accountname@gmail.com
-    #+END_EXAMPLE
+    3. On =offlineimap-oneshot.service=, comment out
+       =[Install]= section to make it a static service,
+       otherwise this service is executed on every startup
+       and slows its process.
 
-    =notmuch tag -inbox +sent from:Accountname@gmail.com= means 
-    the =inbox= tag is removed and the =sent= tag is added 
-    regarding the e-mails sent from =Accountname@gmail.com=.
+       #+BEGIN_EXPORT html
+       <pre class="nomargin">
+       ~/.config/systemd/user/offlineimap-oneshot.service
+       </pre>
+       #+END_EXPORT
+       #+BEGIN_SRC conf-unix
+       [Unit]
+       Description=Offlineimap Service (oneshot)
+
+       [Service]
+       Type=oneshot
+       ExecStart=/usr/bin/offlineimap -o -u syslog
+       # Give 12 seconds for offlineimap to gracefully stop before hard killing it.
+       TimeoutStopSec=12
+       # Restart=on-watchdog
+       # WatchdogSec=300
+
+       # [Install]
+       # WantedBy=mail.target
+       #+END_SRC
+
+    4. Make These files effective.
+       #+BEGIN_EXAMPLE
+       $ systemctl --user enable mail.target
+       $ systemctl --user enable offlineimap-oneshot.service
+       $ systemctl --user enable offlineimap.timer
+       #+END_EXAMPLE
+
+    By these settings the 1st goal are satisfied.
+
+** Notmuch
+   =Notmuch= is an email tag system, it makes very easier to find and arrange
+   emails. It also provides =emacs= interface. In this section, create
+   its database and the folder which stores it, and configure auto refresh and
+   auto tagging.
+
+   1. Executing =notmuch= for the first time, interactive setup is appeared.
+      Following the guide input your user name, mail address
+      and local mail folder, which needs to be the upper directory
+      or the same as offlineimap's local directory (I set =~/mail/=),
+      and the config file
+      =~/.notmuch-config= is created. After configuring, execute
+      #+BEGIN_EXAMPLE
+      $ notmuch new
+      #+END_EXAMPLE
+      , then the mail database file is created.
+
+      This command also refreshes the notmuch database file.
+
+   2. To refresh the database and tag emails every time
+      =offlineimap= fetches e-mails from the server,
+      edit =postsync.sh= described above.
+      #+BEGIN_EXPORT html
+      <pre class="nomargin">~/.config/offlineimap/postsync.sh</pre>
+      #+END_EXPORT
+      #+BEGIN_SRC sh
+      notmuch new
+      notmuch tag -inbox +sent from:Accountname@gmail.com
+      #+END_SRC
+
+      =notmuch tag -inbox +sent from:Accountname@gmail.com= means
+      the =inbox= tag is removed and the =sent= tag is added
+      regarding the e-mails sent from =Accountname@gmail.com=.
 
 ** emacs
 *** Notmuch emacs interface
-     Notmuch emacs interface files mostly have already been installed 
-     with =Notmuch=. To load the interface files when the emacs command 
+     Notmuch emacs interface files mostly have already been installed
+     with =Notmuch=. To load the interface files when the emacs command
      =notmuch= is executed, the following is added to your emacs config file
      (=~/.emacs=, =~/.emacs.el=, or =~/.emacs.d/init.el=).
-     #+BEGIN_EXAMPLE
+     #+BEGIN_EXPORT html
+     <pre class="nomargin">
+     ~/.emacs, ~/.emacs.el, or ~/.emacs.d/init.el
+     </pre>
+     #+END_EXPORT
+
+     #+begin_src emacs-lisp :tangle yes
      (autoload 'notmuch "notmuch" "notmuch mail" t)
-     #+END_EXAMPLE
-     
-     If you configure more, you should use Emacs customization interface 
+     #+end_src
+
+     If you configure more, you should use Emacs customization interface
      executing the command =M-x customize-group RET notmuch RET=.
 
-*** Message mode    
-     Using =notmuch= on =emacs=, you will use =message-mode= when 
-     you compose e-mails. The configuration of =message-mode= is introduced 
-     here.
-     #+BEGIN_EXAMPLE
+*** Message mode
+     Using =notmuch= on =emacs=, you will use =message-mode= when
+     you compose emails. The configuration of =message-mode= is
+     #+BEGIN_EXPORT html
+     <pre class="nomargin">
+     ~/.emacs, ~/.emacs.el, or ~/.emacs.d/init.el
+     </pre>
+     #+END_EXPORT
+     #+begin_src emacs-lisp
      ;; setup the mail address and use name
      (setq mail-user-agent 'message-user-agent)
      (setq user-mail-address "Accountname@gmail.com"
@@ -209,7 +254,7 @@ layout: default
      ;; smtp config
      (setq smtpmail-smtp-server "smtp.gmail.com"
            message-send-mail-function 'message-smtpmail-send-it)
-    
+
      ;; report problems with the smtp server
      (setq smtpmail-debug-info t)
      ;; add Cc and Bcc headers to the message buffer
@@ -219,9 +264,44 @@ layout: default
      (setq message-kill-buffer-on-exit t)
      ;; change the directory to store the sent mail
      (setq message-directory "~/mail/")
-     #+END_EXAMPLE
-     
+     #+end_src
+
      On this config the Gmail server is used as smtp server.
-     Sent and draft mails should be put in the directory Notmuch can 
-     read. 
-     
+     Sent and draft mails should be put in the directory Notmuch can
+     read.
+
+*** offlineimap execution on emacs
+    Using the notmuch emacs interface, I often refresh my local mail box
+    from emacs. Followings are the configuration to execute =offlineimap=
+    on =emacs=.
+
+    #+BEGIN_EXPORT html
+    <pre class="nomargin">
+    ~/.emacs, ~/.emacs.el, or ~/.emacs.d/init.el
+    </pre>
+    #+END_EXPORT
+    #+BEGIN_SRC emacs-lisp
+    (defun notmuch-exec-offlineimap ()
+        "execute offlineimap"
+        (interactive)
+        (set-process-sentinel
+         (start-process-shell-command "offlineimap"
+                                      "*offlineimap*"
+                                      "offlineimap -o")
+         '(lambda (process event)
+            (notmuch-refresh-all-buffers)
+            (let ((w (get-buffer-window "*offlineimap*")))
+              (when w
+                (with-selected-window w (recenter (window-end)))))))
+        (popwin:display-buffer "*offlineimap*"))
+
+    (add-to-list 'popwin:special-display-config
+                 '("*offlineimap*" :dedicated t :position bottom :stick t
+                   :height 0.4 :noselect t))
+    #+END_SRC
+
+    *Configuration details*
+    - Used sentinel to refresh all notmuch-related buffers and the end
+      of the output of =offlineimap= is shown on =*offlineimap*= buffer.
+    - =*offlineimap*= buffer is shown with popwin of emacs =popwin= package.
+
