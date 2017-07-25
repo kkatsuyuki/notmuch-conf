@@ -26,11 +26,12 @@ layout: default
   Refer to above links. I think you should use the package system of your OS.
 
 * Configurations
-** Goal
-   1. Automatically synchronize local mailbox with your gmail server
-   2. Automatically assign the basic tags to some mails like Gmail
+  My goals are
 
-      I set up some below configurations referring to [[http://chrisdone.com/posts/emacs-mail][Emacs, Notmuch and Offlineimap]].
+   1. Automatically synchronize local mailbox with your gmail server
+   2. Automatically assign the basic tags to some mails like Gmail.
+
+   I set up some below configurations referring to [[http://chrisdone.com/posts/emacs-mail][Emacs, Notmuch and Offlineimap]].
 
 ** Offlineimap
 *** Offlineimap
