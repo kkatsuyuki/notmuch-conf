@@ -350,7 +350,27 @@ notmuch tag -inbox +sent from:Accountname@gmail.com
 <code>notmuch tag -inbox +sent from:Accountname@gmail.com</code> means
 the <code>inbox</code> tag is removed and the <code>sent</code> tag is added
 regarding the e-mails sent from <code>Accountname@gmail.com</code>.
-</p></li>
+</p>
+
+<p>
+<b>Another way</b>
+</p>
+
+<p>
+If you try to make many tag rules, you should write them in
+an external file and let <code>notmuch tag</code> to read it.
+</p>
+<pre class="nomargin">~/.config/offlineimap/postsync.sh</pre>
+<div class="org-src-container">
+<pre class="src src-sh">notmuch new
+notmuch tag --batch --input=/home/guest/.config/offlineimap/notmuch_tag
+</pre>
+</div>
+<pre class="nomargin">~/.config/offlineimap/notmuch_tags</pre>
+<pre class="example">
+-inbox +sent from:Accountname@gmail.com
+-inbox +promotions unsubscribe
+</pre></li>
 </ol>
 </div>
 </div>

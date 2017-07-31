@@ -220,6 +220,25 @@ layout: default
       the =inbox= tag is removed and the =sent= tag is added
       regarding the e-mails sent from =Accountname@gmail.com=.
 
+      *Another way*
+
+      If you try to make many tag rules, you should write them in
+      an external file and let =notmuch tag= to read it.
+      #+BEGIN_EXPORT html
+      <pre class="nomargin">~/.config/offlineimap/postsync.sh</pre>
+      #+END_EXPORT
+      #+BEGIN_SRC sh
+      notmuch new
+      notmuch tag --batch --input=/home/guest/.config/offlineimap/notmuch_tag
+      #+END_SRC
+      #+BEGIN_EXPORT html
+      <pre class="nomargin">~/.config/offlineimap/notmuch_tags</pre>
+      #+END_EXPORT
+      #+BEGIN_EXAMPLE
+      -inbox +sent from:Accountname@gmail.com
+      -inbox +promotions unsubscribe
+      #+END_EXAMPLE
+
 ** emacs
 *** Notmuch emacs interface
      Notmuch emacs interface files mostly have already been installed

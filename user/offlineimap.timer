@@ -1,10 +1,13 @@
 [Unit]
-Description=Offlineimap Query Timer
+Description=Offlineimap Service (oneshot)
 
-[Timer]
-OnStartupSec=5
-OnUnitInactiveSec=2m
-Unit=offlineimap-oneshot.service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/offlineimap -o -u syslog
+# Give 12 seconds for offlineimap to gracefully stop before hard killing it.
+TimeoutStopSec=12
+# Restart=on-watchdog
+# WatchdogSec=300
 
-[Install]
-WantedBy=mail.target
+# [Install]
+# WantedBy=mail.target
