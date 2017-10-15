@@ -321,7 +321,7 @@ layout: default
     #+END_SRC
 
     *Configuration details*
-    - Used sentinel to refresh all notmuch-related buffers and the end
-      of the output of =offlineimap= is shown on =*offlineimap*= buffer.
-    - =*offlineimap*= buffer is shown with popwin of emacs =popwin= package.
+    - Used sentinel to refresh all notmuch-related buffers and show the end
+      of the output of =offlineimap= on =*offlineimap*= buffer.
+    - =*offlineimap*= buffer is shown with a popup window of emacs =popwin= package.
 
