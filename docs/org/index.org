@@ -124,11 +124,25 @@ layout: default
     unit file periodically.
     The target is one-shot service that execute =offlineimap=.
 
-    1. Copy installed =offlineimap.timer=, =offlineimap.service= and
+    1. Copy installed =offlineimap.timer=, =offlineimap-oneshot.service= and
        =mail.target= to =~/.config/systemd/user/=.
        #+BEGIN_EXAMPLE
-       $ cp offlineimap.timer offlineimap.service mail.target ~/.config/systemd/user/
+       $ cp offlineimap.timer offlineimap-oneshot.service mail.target ~/.config/systemd/user/
        #+END_EXAMPLE
+
+       If you don't have =mail.target=, you can create the following.
+       #+BEGIN_EXPORT html
+       <pre class="nomargin">
+       ~/.config/systemd/user/mail.target
+       </pre>
+       #+END_EXPORT
+       #+BEGIN_SRC conf-unix
+       [Unit]
+       Description=Mail Target
+
+       [Install]
+       WantedBy=default.target
+       #+END_SRC
 
     2. (Optional) I edited =offlineimap.timer=  to execute
        =offlineimap-oneshot.service= soon (1m)

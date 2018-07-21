@@ -231,12 +231,27 @@ The target is one-shot service that execute <code>offlineimap</code>.
 
 <ol class="org-ol">
 <li><p>
-Copy installed <code>offlineimap.timer</code>, <code>offlineimap.service</code> and
+Copy installed <code>offlineimap.timer</code>, <code>offlineimap-oneshot.service</code> and
 <code>mail.target</code> to <code>~/.config/systemd/user/</code>.
 </p>
 <pre class="example">
-$ cp offlineimap.timer offlineimap.service mail.target ~/.config/systemd/user/
-</pre></li>
+$ cp offlineimap.timer offlineimap-oneshot.service mail.target ~/.config/systemd/user/
+</pre>
+
+<p>
+If you don't have <code>mail.target</code>, you can create the following.
+</p>
+<pre class="nomargin">
+~/.config/systemd/user/mail.target
+</pre>
+<div class="org-src-container">
+<pre class="src src-conf-unix">[<span class="org-type">Unit</span>]
+<span class="org-variable-name">Description</span>=Mail Target
+
+[<span class="org-type">Install</span>]
+<span class="org-variable-name">WantedBy</span>=default.target
+</pre>
+</div></li>
 
 <li><p>
 (Optional) I edited <code>offlineimap.timer</code>  to execute
