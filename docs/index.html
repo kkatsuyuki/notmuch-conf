@@ -456,6 +456,9 @@ you compose emails. The configuration of <code>message-mode</code> is
 
 <p>
 On this config the Gmail server is used as smtp server.
+But above settings don't provide authentication infomation, so <code>Emacs</code>
+looks into <code>~/.authinfo</code> or <code>~/.authinfo.gpg</code>.
+About these files, see <a href="https://www.emacswiki.org/emacs/SendingMail#toc6">Emacs Wiki: Sending Mail</a>.
 Sent and draft mails should be put in the directory Notmuch can
 read.
 </p>

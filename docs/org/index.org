@@ -306,6 +306,9 @@ layout: default
      #+end_src
 
      On this config the Gmail server is used as smtp server.
+     But above settings don't provide authentication infomation, so =Emacs=
+     looks into =~/.authinfo= or =~/.authinfo.gpg=.
+     About these files, see [[https://www.emacswiki.org/emacs/SendingMail#toc6][Emacs Wiki: Sending Mail]].
      Sent and draft mails should be put in the directory Notmuch can
      read.
 
