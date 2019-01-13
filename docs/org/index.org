@@ -110,6 +110,11 @@ layout: default
            nametrans = lambda foldername: re.sub('^\[Gmail\]/All Mail$', 'all',foldername)
            #+END_SRC
 
+         - Regarding Gmail authentication, since I don't know OAUTH2 well,
+           I use the app password of Google 2-Step-Verification
+           (See [[https://support.google.com/accounts/answer/185833?hl=en][Sign in using App Passwords]]).
+           Subsitute it in =yourpassword=.
+
       3. To see =offlineimap= to work well, execute
          #+BEGIN_EXAMPLE
          $ offlineimap
