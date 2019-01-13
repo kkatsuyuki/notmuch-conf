@@ -164,15 +164,16 @@ My config file <code>$XDG_CONFIG_HOME/offlineimap/config</code> is
 <li>To use this, we should change <code>Accountname</code>, <code>yourpassword</code> appropriately.</li>
 <li>We have to change the path of <code>postsysnchook</code>, <code>sslcacertfile</code> to adjust our environment.</li>
 </ul>
+
 <p>
-<b>Configuration details</b>
+<b>Above details</b>
 </p>
 
 <ul class="org-ul">
 <li><p>
 Every time the local mailbox is synchronized,
-the notmuch commands for refreshing and tagging should be executed.
-That's why the shell-script <code>postsync.sh</code>, which is described later,
+notmuch commands for refreshing and tagging should be executed.
+So the shell-script <code>postsync.sh</code>, which is described later,
 are hooked.
 </p>
 <div class="org-src-container">

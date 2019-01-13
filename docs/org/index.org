@@ -83,11 +83,11 @@ layout: default
          - To use this, we should change =Accountname=, =yourpassword= appropriately.
          - We have to change the path of =postsysnchook=, =sslcacertfile= to adjust our environment.
 
-         *Configuration details*
+         *Above details*
 
          - Every time the local mailbox is synchronized,
-           the notmuch commands for refreshing and tagging should be executed.
-           That's why the shell-script =postsync.sh=, which is described later,
+           notmuch commands for refreshing and tagging should be executed.
+           So the shell-script =postsync.sh=, which is described later,
            are hooked.
            #+BEGIN_SRC conf-unix
            postsynchook = ~/.config/offlineimap/postsync.sh
