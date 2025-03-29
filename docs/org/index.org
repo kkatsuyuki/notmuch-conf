@@ -1,3 +1,5 @@
+#+LANGUAGE: en
+
 #+BEGIN_EXPORT html
 ---
 layout: default
